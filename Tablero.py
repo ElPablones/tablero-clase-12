@@ -23,7 +23,7 @@ with st.sidebar:
         bg_color = st.color_picker("Color de fondo", "#000000")
         bg_image_file = st.file_uploader("Subir imagen de fondo:", type=["png", "jpg", "jpeg"])
         
-        # Devolver los sliders de dimensiones
+        # Sliders de dimensiones
         canvas_width = st.slider("Ancho", 300, 1000, 600, 50)
         canvas_height = st.slider("Alto", 200, 800, 400, 50)
 
@@ -43,21 +43,27 @@ canvas_result = st_canvas(
     key="canvas" 
 )
 
-# Lógica para descargar el dibujo
-if canvas_result.image_data is not None:
-    st.divider()
-    st.subheader("Exportar")
-    
-    # Convertir el array de numpy a imagen PIL
-    img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
-    
-    # Crear un buffer para la descarga
-    buffer = io.BytesIO()
-    img.save(buffer, format="PNG")
-    
-    st.download_button(
-        label="💾 Descargar dibujo como PNG",
-        data=buffer.getvalue(),
-        file_name="mi_dibujo.png",
-        mime="image/png"
-    )
+# Lógica para descargar el dibujo con prevención del RuntimeError
+if canvas_result is not None and canvas_result.json_data is not None:
+    try:
+        # Intentamos acceder a la imagen solo si el componente ya la generó
+        if canvas_result.image_data is not None:
+            st.divider()
+            st.subheader("Exportar")
+            
+            # Convertir el array de numpy a imagen PIL
+            img = Image.fromarray(canvas_result.image_data.astype('uint8'), 'RGBA')
+            
+            # Crear un buffer para la descarga
+            buffer = io.BytesIO()
+            img.save(buffer, format="PNG")
+            
+            st.download_button(
+                label="💾 Descargar dibujo como PNG",
+                data=buffer.getvalue(),
+                file_name="mi_dibujo.png",
+                mime="image/png"
+            )
+    except RuntimeError:
+        # Si el tablero aún se está inicializando, ignoramos el error silenciosamente
+        pass
