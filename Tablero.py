@@ -30,7 +30,7 @@ with st.sidebar:
         canvas_height = st.slider("Alto", 200, 800, 400, 50)
 
     # --- NUEVO PANEL DE ANIMACIÓN ---
-    with st.expander("🎬 Animación (Stop-Motion)", expanded=True):
+    with st.expander("🎬 Animación", expanded=True):
         st.write(f"**Fotogramas capturados:** {len(st.session_state.frames)}")
         
         # Botón para capturar el dibujo actual como un frame
